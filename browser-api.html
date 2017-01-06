@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  const ipcRenderer = require('electron').ipcRenderer;
+  var updateOnlineStatus = function() {
+    ipcRenderer.send('online-status-changed', navigator.onLine ? 'online' : 'offline');
+  };
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline',  updateOnlineStatus);
+
+  updateOnlineStatus();
+  
+  function gotPositionCallback(position)
+  {
+    var result = { coords: {}, timestamp: position.timestamp };
+    ['latitude', 'longitude', 'altitude', 'accuracy', 'altitudeAccuracy', 'heading', 'speed']
+      .forEach(function(prop)
+      {
+        result.coords[prop] = position.coords[prop];
+      });
+    
+    ipcRenderer.send('got-current-position', result);
+  }
+  
+  function geolocation(fun, options)
+  {
+    return navigator.geolocation[fun](gotPositionCallback,
+    function(error)
+    {
+      ipcRenderer.send('error-getting-current-position', error);
+    },
+    options);
+  };
+</script>
+</body>
+</html>
