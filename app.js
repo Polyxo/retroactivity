@@ -2,6 +2,7 @@ var Scheduler = require('./scheduler');
 var actions = require('./actions/index');
 var BrowserWindow = require('electron').BrowserWindow;
 var electronApp = require('electron').app;
+var database = require('./activity-db');
 
 function App()
 {
@@ -23,6 +24,9 @@ function App()
       actions.openTaskAssignment();
   }.bind(this));
   
+  this.database = database;
+  this.database.initialize();
+  
   electronApp.on('window-all-closed', function() {
     //Keep running :)
   });
@@ -38,6 +42,14 @@ App.prototype =
   
   openAppWindow: function openAppWindow()
   {
+    this.database.matchApplication({ windowID: 123 }).then(function(app)
+    {
+      console.log("match", app);
+    }, function(err)
+    {
+      console.log("match err", err);
+    });
+    
     if(!this.window)
     {
       this.window = new BrowserWindow({ webPreferences: { }, height: 600, width: 1200});
