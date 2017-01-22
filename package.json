@@ -10,7 +10,7 @@
     "react": "^15.4.1",
     "react-addons-update": "^15.4.1",
     "react-dom": "^15.4.1",
-    "sqlite": "^2.2.4",
+    "sqlite": "^2.2.4"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",

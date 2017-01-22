@@ -1,4 +1,5 @@
 import React from "react";
+import Item from "./TaskListItem";
 
 export default class TaskList extends React.Component {
   constructor(props) {
@@ -7,7 +8,7 @@ export default class TaskList extends React.Component {
   
   render() {
     return (
-      <ul>
+      <ul className="task-list">
         {
           Object.keys(this.props.data.tasks).map((key) =>
           {
@@ -16,10 +17,10 @@ export default class TaskList extends React.Component {
               {
                 if(typeof this.props.onSelect == 'function')
                   return this.props.onSelect(event, { key, task });
-              }}>{ task.name }</li> );
+              }}><Item taskKey={key} task={task} data={this.props.data} /></li> );
           })
         }
-        <li onClick={(event) =>
+        <li style={{ height: '500px' }} onClick={(event) =>
         {
           if(typeof this.props.onSelect == 'function')
             return this.props.onSelect(event, { null });
