@@ -4,10 +4,10 @@ export default function render()
 {
   return (
     <svg width="0" height="0"><defs>
-      <pattern patternUnits="userSpaceOnUse" width="2" height="1" patternTransform="translate(0,0) scale(1.6,1.6) matrix(1,1,-3,3,0,0)" style={{ fill:'#555555' }} id="pattern_0">
+      <pattern patternUnits="userSpaceOnUse" width="2" height="1" patternTransform="translate(0,0) scale(1.6,1.6) matrix(1,1,-3,3,0,0)" style={{ fill:'#888' }} id="pattern_0">
         <rect x="0" y="-0.5" width="1" height="2"/>
       </pattern>,
-      <pattern patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="translate(0,0) scale(3,3)" style={{ fill:'#555555' }} id="pattern_1">
+      <pattern patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="translate(0,0) scale(3,3)" style={{ fill:'#888' }} id="pattern_1">
         <circle cx="2.567" cy="0.810" r="0.45"/>
         <circle cx="3.048" cy="2.33" r="0.45"/>
         <circle cx="4.418" cy="2.415" r="0.45"/>

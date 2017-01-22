@@ -98,7 +98,7 @@ export class Wedge extends React.Component {
 		
 		var pathString = path.reduce(function(a, b) { return a + ' ' + b.join(' '); }, '');
 		
-		return ( <path d={pathString} {...attributes} /> );
+		return ( <path d={pathString} {...attributes} >{ this.props.children }</path> );
 	}
 }
 

@@ -50,7 +50,7 @@ export default class TimeBar extends React.Component {
             if(typeof this.props.onSelect == 'function')
               return this.props.onSelect(event, item);
           }}
-        />
+        ><title>{item.application.name}</title></rect>
       ));
     
     var taskBlocks = summary.blocks
