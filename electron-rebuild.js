@@ -1,4 +1,4 @@
-var modules = [ 'sqlite3' ];
+var modules = [ 'activity-monitor>iconv', 'sqlite3', 'activity-monitor>ref', 'activity-monitor>ffi' ];
 
 var path = require('path');
 var getVersion = require('electron-version');
