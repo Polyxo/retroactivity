@@ -13,7 +13,7 @@ function formatDuration(duration)
     duration /= unitDividers[i];
   }
   
-  return duration + ' ' + unitNames[i];
+  return Math.round(duration) + ' ' + unitNames[i];
 }
 
 export default class TaskListItem extends React.Component
@@ -24,15 +24,15 @@ export default class TaskListItem extends React.Component
   
   render() {
     console.log("Looking for", this.props.taskKey);
-    var totalDuration = this.props.data.timeSlices.reduce((duration, slice) => duration + slice.end.getTime() - slice.begin.getTime(), 0);
+    var totalDuration = this.props.data.timeSlices.reduce((duration, slice) => duration + slice.end - slice.begin, 0);
     var slices = this.props.data.timeSlices.filter(slice => ''+slice.task == this.props.taskKey);
-    var duration = slices.reduce((duration, slice) => duration + slice.end.getTime() - slice.begin.getTime(), 0);
+    var duration = slices.reduce((duration, slice) => duration + slice.end - slice.begin, 0);
     var taskDurations = {};
     slices.forEach(slice =>
     {
       if(typeof taskDurations[slice.application] == 'undefined')
         taskDurations[slice.application] = 0;
-      taskDurations[slice.application] += slice.end.getTime() - slice.begin.getTime();
+      taskDurations[slice.application] += slice.end - slice.begin;
     });
     console.log(taskDurations);
     
@@ -55,7 +55,7 @@ export default class TaskListItem extends React.Component
                      backgroundColor: application.color,
                      width: (duration / totalDuration * 50)+'%'
                    }}
-                   title={application.name}
+                   title={application.programName}
                />);
              })
            }

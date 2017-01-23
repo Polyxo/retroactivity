@@ -35,7 +35,7 @@ export default class TimeRuler extends React.Component {
 
   render() {
     var { leftDate, rightDate, leftPosition, rightPosition } = this.props;
-    var duration = rightDate.getTime() - leftDate.getTime();
+    var duration = rightDate - leftDate;
     var width = rightPosition - leftPosition;
     
     if(duration > 1000*60*60*24*31*2) // longer than 2 months
@@ -96,23 +96,23 @@ export default class TimeRuler extends React.Component {
       //FIXME: should re-align whenever the next higher unit changes
       
       //draw main line
-      var relPosition = (currentDate.getTime() - leftDate.getTime())/duration;
+      var relPosition = (currentDate - leftDate)/duration;
       var position = relPosition*width + leftPosition;
-      lines.push(<polyline key={currentDate.getTime()} points={ position + ',0 ' + position + ',10'} />);
+      lines.push(<polyline key={currentDate} points={ position + ',0 ' + position + ',10'} />);
       
       //draw text
       var content = format(currentDate);
       var anchor = relPosition < 0.2 ? 'start' : (relPosition > 0.8 ? 'end' : 'middle');
-      text.push(<text key={currentDate.getTime()} x={position} y={20} style={{ fontSize: '10px', textAnchor: anchor, stroke: 'none' }}><tspan>{ content }</tspan></text>);
+      text.push(<text key={currentDate} x={position} y={20} style={{ fontSize: '10px', textAnchor: anchor, stroke: 'none' }}><tspan>{ content }</tspan></text>);
       
       //draw divisions
-      var nextPosition = (nextDate.getTime() - leftDate.getTime())/duration*width + leftPosition;
+      var nextPosition = (nextDate - leftDate)/duration*width + leftPosition;
       var step = (nextPosition - position) / divisions;
       for(var i = 1; i < divisions; i++)
       {
         var subPosition = position + step*i;
         if(subPosition <= rightPosition)
-          lines.push(<polyline key={currentDate.getTime() + '_' + i} points={ subPosition + ',0 ' + subPosition + ',5'} />);
+          lines.push(<polyline key={currentDate + '_' + i} points={ subPosition + ',0 ' + subPosition + ',5'} />);
       }
       
       currentDate = nextDate;

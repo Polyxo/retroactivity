@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 import update from 'react-addons-update';
+import { ipcRenderer } from 'electron';
 
 var emitter = new EventEmitter();
 
@@ -7,40 +8,40 @@ var model =
 {
   timeSlices:
   [
-    { begin: new Date(2017, 0, 2, 16,  0), end: new Date(2017, 0, 2, 16, 10), application: 1, task: null },
-    { begin: new Date(2017, 0, 2, 16, 10), end: new Date(2017, 0, 2, 16, 15), application: 3, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 15), end: new Date(2017, 0, 2, 16, 30), application: 4, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 30), end: new Date(2017, 0, 2, 16, 32), application: 1, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 32), end: new Date(2017, 0, 2, 16, 38), application: 4, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 38), end: new Date(2017, 0, 2, 16, 40), application: 3, task: 1 },
-    { begin: new Date(2017, 0, 2, 16, 40), end: new Date(2017, 0, 2, 16, 41), application: 1, task: null },
-    { begin: new Date(2017, 0, 2, 16, 41), end: new Date(2017, 0, 2, 16, 45), application: 2, task: 1 },
-    { begin: new Date(2017, 0, 2, 16, 45), end: new Date(2017, 0, 2, 16, 48), application: 3, task: 1 },
-    { begin: new Date(2017, 0, 2, 16, 48), end: new Date(2017, 0, 2, 17,  0), application: 4, task: 1 },
+    { begin: new Date(2017, 0, 2, 16,  0).getTime(), end: new Date(2017, 0, 2, 16, 10).getTime(), application: 1, task: null },
+    { begin: new Date(2017, 0, 2, 16, 10).getTime(), end: new Date(2017, 0, 2, 16, 15).getTime(), application: 3, task: 2 },
+    { begin: new Date(2017, 0, 2, 16, 15).getTime(), end: new Date(2017, 0, 2, 16, 30).getTime(), application: 4, task: 2 },
+    { begin: new Date(2017, 0, 2, 16, 30).getTime(), end: new Date(2017, 0, 2, 16, 32).getTime(), application: 1, task: 2 },
+    { begin: new Date(2017, 0, 2, 16, 32).getTime(), end: new Date(2017, 0, 2, 16, 38).getTime(), application: 4, task: 2 },
+    { begin: new Date(2017, 0, 2, 16, 38).getTime(), end: new Date(2017, 0, 2, 16, 40).getTime(), application: 3, task: 1 },
+    { begin: new Date(2017, 0, 2, 16, 40).getTime(), end: new Date(2017, 0, 2, 16, 41).getTime(), application: 1, task: null },
+    { begin: new Date(2017, 0, 2, 16, 41).getTime(), end: new Date(2017, 0, 2, 16, 45).getTime(), application: 2, task: 1 },
+    { begin: new Date(2017, 0, 2, 16, 45).getTime(), end: new Date(2017, 0, 2, 16, 48).getTime(), application: 3, task: 1 },
+    { begin: new Date(2017, 0, 2, 16, 48).getTime(), end: new Date(2017, 0, 2, 17,  0).getTime(), application: 4, task: 1 },
   ],
   applications:
   {
     "1":
     {
-      name: "Firefox",
+      programName: "Firefox",
       logo: "img/firefox.png",
       color: '#ea7e1c'
     },
     "2":
     {
-      name: "Google Chrome",
+      programName: "Google Chrome",
       logo: "img/chrome.png",
       color: '#38a0ce'
     },
     "3":
     {
-      name: "gedit",
+      programName: "gedit",
       logo: "img/gedit.png",
       color: '#97cf1a'
     },
     "4":
     {
-      name: "Adobe After Effects",
+      programName: "Adobe After Effects",
       logo: "img/ae.png",
       color: '#6f1f9c'
     },
@@ -71,6 +72,13 @@ function onUpdateModel(listener)
 {
   emitter.on('update', listener);
 }
+
+ipcRenderer.on('update-model', function(event, arg)
+{
+  updateModel(arg);
+});
+
+ipcRenderer.send('can-update-model', {});
 
 export default model;
 export { updateModel, onUpdateModel };

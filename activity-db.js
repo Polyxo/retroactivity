@@ -200,6 +200,53 @@ Database.prototype =
       }
       return result;
     });
+  },
+  
+  getSlices: function getSlices(begin, end)
+  {
+    if(typeof begin == 'object') begin = begin.getTime();
+    if(typeof end == 'object') end = end.getTime();
+    
+    var values = { $begin: begin, $end: end };
+    var db = null;
+    
+    return this.initializedPromise.then(function(idb)
+    {
+      db = idb;
+      
+      var statement = 'SELECT * FROM slices WHERE end >= $begin AND begin <= $end';
+      return db.all(statement, values);
+    }.bind(this)).then(function(result)
+    {
+      console.log("Get slices", result, values, "now", new Date().getTime());
+      return result;
+    });
+  },
+  
+  getApplications: function getApplications(ids)
+  {
+    if(ids && ids.length > 0)
+    {
+      var where = ' WHERE id IN (' + ids.map(function() { return '?'; }).join(', ') + ')';
+    }
+    else
+    {
+      var where = '';
+      ids = [];
+    }
+    
+    return this.initializedPromise.then(function(idb)
+    {
+      db = idb;
+      
+      var statement = 'SELECT * FROM applications' + where;
+      return db.all(statement, ids);
+    }.bind(this)).then(function(result)
+    {
+      var applications = {};
+      result.forEach(function(app) { applications[app.id] = app; });
+      return applications;
+    });
   }
 }
 

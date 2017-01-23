@@ -3,31 +3,20 @@ import { Wedge } from "./PieChart";
 
 const turns2radians = 2 * Math.PI;
 
-function formatDiffTime(diff) {
-    var seconds = Math.floor(diff / 1000);
-
-    var interval = Math.floor(seconds / 31536000);
-
-    if (interval > 1) {
-        return interval + " years";
-    }
-    interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
-        return interval + " months";
-    }
-    interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
-        return interval + " d";
-    }
-    interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
-        return interval + " h";
-    }
-    interval = Math.floor(seconds / 60);
-    if (interval > 1) {
-        return interval + " m";
-    }
-    return Math.floor(seconds) + " s";
+function formatDuration(duration)
+{
+  if(duration == 0)
+    return '';
+  
+  var unitNames = [ 'ms', 's', 'm', 'h', 'd' ];
+  var unitDividers = [ 1000, 60,  60,  24 ];
+  
+  for(var i = 0; i < 4 && duration > unitDividers[i]; i++)
+  {
+    duration /= unitDividers[i];
+  }
+  
+  return Math.round(duration) + ' ' + unitNames[i];
 }
 
 export default class TimePie extends React.Component {
@@ -42,7 +31,7 @@ export default class TimePie extends React.Component {
     
     this.props.data.timeSlices.forEach((slice) =>
     {
-      var duration = slice.end.getTime() - slice.begin.getTime();
+      var duration = slice.end - slice.begin;
       summary.total += duration;
       if(summary.wedges[slice.application])
       {
@@ -141,7 +130,7 @@ export default class TimePie extends React.Component {
       {
         return (
           <Wedge
-              key={item.application.name}
+              key={item.application.programName}
           		beginRadius={60}
           		beginAngle={item.beginAngle}
           		sizeAngle={item.sizeAngle}
@@ -155,7 +144,7 @@ export default class TimePie extends React.Component {
                 if(typeof this.props.onSelect == 'function')
                   return this.props.onSelect(event, item);
               }}
-            ><title>{item.application.name}</title></Wedge>
+            ><title>{item.application.programName}</title></Wedge>
         );
       });
       
@@ -163,7 +152,7 @@ export default class TimePie extends React.Component {
     {
       return ( 
         <image
-          key={item.application.name}
+          key={item.application.programName}
           xlinkHref={item.application.logo}
           x={Math.cos(item.midAngle * turns2radians) * 40 - 10}
           y={Math.sin(item.midAngle * turns2radians) * 40 - 10}
@@ -210,15 +199,15 @@ export default class TimePie extends React.Component {
       
       return ( 
         <text
-          key={item.application.name}
+          key={item.application.programName}
           { ...props }
           style={{
             fontSize: '10px',
             textAnchor: Math.abs(props.y) > 50 ? 'middle' : (props.x > 0 ? 'start' : 'end')
           }}
         >
-          <tspan { ...props}>{ item.application.name }</tspan>
-          <tspan { ...props} dy="12">{ formatDiffTime(item.duration) }</tspan>
+          <tspan { ...props}>{ item.application.programName }</tspan>
+          <tspan { ...props} dy="12">{ formatDuration(item.duration) }</tspan>
         </text>
       );
     });

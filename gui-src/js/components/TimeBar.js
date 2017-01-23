@@ -8,13 +8,13 @@ export default class TimeBar extends React.Component {
     var timeSlices = this.props.data.timeSlices;
     var summary =
     {
-      total: timeSlices[timeSlices.length - 1].end.getTime() - timeSlices[0].begin.getTime()
+      total: timeSlices[timeSlices.length - 1].end- timeSlices[0].begin
     };
     
     var sum = 0;
     summary.blocks = timeSlices.map((slice, i) =>
     {
-      var duration = slice.end.getTime() - slice.begin.getTime();
+      var duration = slice.end - slice.begin;
       var res =
       {
         key: i,
@@ -50,7 +50,7 @@ export default class TimeBar extends React.Component {
             if(typeof this.props.onSelect == 'function')
               return this.props.onSelect(event, item);
           }}
-        ><title>{item.application.name}</title></rect>
+        ><title>{item.application.programName}</title></rect>
       ));
     
     var taskBlocks = summary.blocks
@@ -72,7 +72,7 @@ export default class TimeBar extends React.Component {
       (
         item.width > 50 ?
           <image
-          key={item.application.name + '_' + i}
+          key={item.application.programName + '_' + i}
           xlinkHref={item.application.logo}
           x={item.x + 0.5*item.width - 15}
           y={50 + 80/2 - 15}

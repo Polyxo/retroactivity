@@ -53,7 +53,8 @@ module.exports = {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ]).concat([
-    new ExtractTextPlugin('css/[name].css')
+    new ExtractTextPlugin('css/[name].css'),
+    new webpack.ExternalsPlugin('commonjs', ['electron'])
   ]),
   resolve: {
     extensions: ['', '.js', '.sass', '.scss'],
