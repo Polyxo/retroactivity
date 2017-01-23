@@ -27,26 +27,29 @@ function objToSqliteSpec(obj)
   return Object.keys(obj).map(function(name) { return name + ' ' + sqliteAffinity(obj[name]); }).join(', ');
 };
 
+var exampleKey = 
+{
+  windowID: 123,
+  pid: 123,
+  desktopFile: '/some/path',
+  'class': 'some_string',
+  gtkWinID: 'some_string',
+  windowRole: 'some_string'
+};
+
+var exampleData =
+{
+  'programName': 'some_string',
+  'localisedProgramName': 'some_string',
+  'icon': new Buffer(['1', '2', '3']),
+  'color': '#123456'
+};
+
 Database.prototype =
 {
   initialize: function initialize()
   {
-    var key = 
-    {
-      windowID: 123,
-      desktopFile: '/some/path',
-      'class': 'some_string',
-      gtkWinID: 'some_string',
-      windowRole: 'some_string'
-    };
     
-    var obj =
-    {
-      'programName': 'some_string',
-      'localisedProgramName': 'some_string',
-      'icon': new Buffer(['1', '2', '3']),
-      'color': '#123456'
-    };
     
     this.initializedPromise = this.dbPromise.then(function(db)
     {
@@ -58,8 +61,8 @@ Database.prototype =
           'CREATE TABLE IF NOT EXISTS applications ' +
           '(' +
              'id INTEGER PRIMARY KEY, ' +
-             objToSqliteSpec(key) + ', ' +
-             objToSqliteSpec(obj) +
+             objToSqliteSpec(exampleKey) + ', ' +
+             objToSqliteSpec(exampleData) +
           ');'
         ),
         db.run
@@ -99,6 +102,27 @@ Database.prototype =
     return this.initializedPromise;
   },
   
+  insertApplication: function insertApplication(key, data)
+  {
+    var fields = Object.keys(exampleKey).concat(Object.keys(exampleData));
+    var values = fields.map(function(name) { if(typeof key[name] !== 'undefined') return key[name]; else return data[name]; });
+    return this.initializedPromise.then(function(db)
+    {
+      var statement = 'INSERT INTO applications (' + fields.join(', ') + ') VALUES(' + fields.map(function() { return '?'; }).join(', ') + ')';
+      
+      return db.run(statement, values);
+    }).then(function(result)
+    {
+      if(result.changes > 0)
+      {
+        values.id = result.lastID;
+        return values;
+      }
+      else
+        throw "insert failed"; //FIXME
+    });
+  },
+  
   matchApplication: function matchApplication(key)
   {
     return this.initializedPromise.then(function(db)
@@ -121,6 +145,32 @@ Database.prototype =
       
       return db.get(statement, newKey);
     });
+  },
+  
+  
+  //returns: db id of application
+  matchOrInsertApplication: function matchOrInserApplication(window)
+  {
+    return window.getKeyObject().then(function(iKey)
+    {
+      key = iKey;
+      return this.matchApplication(key);
+    }.bind(this)).then(function(result)
+    {
+      if(!result)
+      {
+        return window.getFrozen().then(function(iData)
+        {
+          data = iData;
+          return this.insertApplication(key, data);
+        }.bind(this)).then(function(result)
+        {
+          return result;
+        }.bind(this));
+      }
+      else
+        return result;
+    }.bind(this));
   }
 }
 
