@@ -115,8 +115,7 @@ Database.prototype =
     {
       if(result.changes > 0)
       {
-        values.id = result.lastID;
-        return values;
+        return Object.assign({}, key, data, {id: result.lastID});
       }
       else
         throw "insert failed"; //FIXME
@@ -171,6 +170,36 @@ Database.prototype =
       else
         return result;
     }.bind(this));
+  },
+  
+  addSlice: function addSlice(begin, end, application, task)
+  {
+    if(typeof begin == 'object') begin = begin.getTime();
+    if(typeof end == 'object') end = end.getTime();
+    if(typeof application == 'object') application = application.id;
+    
+    var values = { $begin: begin, $end: end, $application: application, $task: task };
+    
+    var db = null;
+    return this.initializedPromise.then(function(idb)
+    {
+      db = idb;
+      
+      var statement = 'UPDATE slices ' +
+                        'SET end = max(end, $end), begin = min(begin, $begin) ' +
+                        'WHERE (application = $application OR IFNULL(application, $application) IS NULL) ' +
+                        'AND   (task        = $task        OR IFNULL(task, $task) IS NULL) ' +
+                        'AND end >= $begin AND begin <= $end';
+      return db.run(statement, values);
+    }.bind(this)).then(function(result)
+    {
+      if(result.changes < 1)
+      {
+        var statement = 'INSERT INTO slices (begin, end, application, task) VALUES ($begin, $end, $application, $task)';
+        return db.run(statement, values);
+      }
+      return result;
+    });
   }
 }
 
