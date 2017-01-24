@@ -73,7 +73,7 @@ export default class TimeBar extends React.Component {
       (
         item.width > 50 ?
           <image
-          key={item.application.programName + '_' + i}
+          key={item.application.id + '_' + i}
           xlinkHref={arrayToURL(item.application.icon)}
           x={item.x + 0.5*item.width - 15}
           y={50 + 80/2 - 15}

@@ -30,24 +30,28 @@ var model =
   {
     "1":
     {
+      id: 1,
       programName: "Firefox",
       icon: "img/firefox.png",
       color: '#ea7e1c'
     },
     "2":
     {
+      id: 2,
       programName: "Google Chrome",
       icon: "img/chrome.png",
       color: '#38a0ce'
     },
     "3":
     {
+      id: 3,
       programName: "gedit",
       icon: "img/gedit.png",
       color: '#97cf1a'
     },
     "4":
     {
+      id: 4,
       programName: "Adobe After Effects",
       icon: "img/ae.png",
       color: '#6f1f9c'

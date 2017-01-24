@@ -117,7 +117,7 @@ export default class TimePie extends React.Component {
       {
         return (
           <Wedge
-              key={item.application.programName}
+              key={item.application.id}
           		beginRadius={60}
           		beginAngle={item.beginAngle}
           		sizeAngle={item.sizeAngle}
@@ -139,7 +139,7 @@ export default class TimePie extends React.Component {
     {
       return ( 
         <image
-          key={item.application.programName}
+          key={item.application.id}
           xlinkHref={arrayToURL(item.application.icon)}
           x={Math.cos(item.midAngle * turns2radians) * 40 - 10}
           y={Math.sin(item.midAngle * turns2radians) * 40 - 10}
@@ -186,7 +186,7 @@ export default class TimePie extends React.Component {
       
       return ( 
         <text
-          key={item.application.programName}
+          key={item.application.id}
           { ...props }
           style={{
             fontSize: '10px',
