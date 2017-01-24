@@ -123,6 +123,37 @@ Database.prototype =
     });
   },
   
+  updateApplication: function updateApplication(id, key, data)
+  {
+    var fields = Object.keys(exampleKey).concat(Object.keys(exampleData));
+    var values =  {};
+    fields.forEach(function(propName)
+    {
+      values['$' + propName] = typeof key[propName] != 'undefined' ? key[propName] : data[propName];
+    });
+    values.$id = id;
+    
+    var db = null;
+    return this.initializedPromise.then(function(idb)
+    {
+      db = idb;
+      
+      var statement = 'UPDATE applications SET ' +
+        fields.map(function(propName) { return propName + ' = $' + propName; }).join(', ') +
+                      ' WHERE id = $id';
+
+      return db.run(statement, values);
+    }).then(function(result)
+    {
+      if(result.changes > 0)
+      {
+        return Object.assign({}, key, data, { id: id });
+      }
+      else
+        throw "update failed"; //FIXME
+    });
+  },
+  
   matchApplication: function matchApplication(key)
   {
     var scores =
@@ -177,19 +208,20 @@ Database.prototype =
       return this.matchApplication(key);
     }.bind(this)).then(function(result)
     {
-      if(!result)
+      return window.getFrozen().then(function(iData)
       {
-        return window.getFrozen().then(function(iData)
-        {
-          data = iData;
+        data = iData;
+        if(!result)
           return this.insertApplication(key, data);
-        }.bind(this)).then(function(result)
+        else //FIXME: possible optimization: just update key here and only periodically get full frozen object
         {
-          return result;
-        }.bind(this));
-      }
-      else
+          console.log("Match score", result.score);
+          return this.updateApplication(result.id, key, data);
+        }
+      }.bind(this)).then(function(result)
+      {
         return result;
+      }.bind(this));
     }.bind(this));
   },
   
