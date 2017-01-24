@@ -10,7 +10,7 @@ module.exports = exports =
   
   arrayToURL: function arrayToURL(array, mimetype)
   {
-    if(typeof array === 'string')
+    if(typeof array !== 'object' || array === null)
       return array;
     else
       return exports.strictArrayToURL(array, mimetype);

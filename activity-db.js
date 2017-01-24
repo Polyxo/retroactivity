@@ -34,7 +34,8 @@ var exampleKey =
   desktopFile: '/some/path',
   'class': 'some_string',
   gtkWinID: 'some_string',
-  windowRole: 'some_string'
+  windowRole: 'some_string',
+  windowTitle: 'some_string'
 };
 
 var exampleData =
@@ -124,6 +125,19 @@ Database.prototype =
   
   matchApplication: function matchApplication(key)
   {
+    var scores =
+    {
+      windowID: 12,
+      pid: 10,
+      'class': 2,
+      desktopFile: 8,
+      gtkWinID: 4,
+      windowRole: 1,
+      windowTitle: 3
+    };
+    
+    var minScore = 6;
+    
     return this.initializedPromise.then(function(db)
     {
       var newKey =  {};
@@ -132,15 +146,22 @@ Database.prototype =
         newKey['$' + propName] = key[propName];
       });
       
-      var statement = 'SELECT * FROM applications WHERE ';
       var whereClauses = [];
       Object.keys(key).forEach(function(propName)
       {
         whereClauses.push(propName + ' = $' + propName);
       });
-      statement += whereClauses.join(' OR ');
+      var scoreClauses = [];
+      Object.keys(key).forEach(function(propName)
+      {
+        scoreClauses.push('(CASE WHEN ' + propName + ' = $' + propName + ' THEN ' + (scores[propName] || 1) + ' ELSE 0 END)');
+      });
       
-      statement += ' LIMIT 1';
+      var statement = 'SELECT *, ';
+      statement += scoreClauses.join(' + ') + ' AS score';
+      statement += ' FROM applications WHERE ';
+      statement += '(' + whereClauses.join(' OR ') + ') AND score >= ' + minScore;
+      statement += ' ORDER BY score DESC LIMIT 1';
       
       return db.get(statement, newKey);
     });
