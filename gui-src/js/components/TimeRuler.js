@@ -1,29 +1,6 @@
 import React from "react";
-
-function setProperty(date, value, prop)
-{
-  date['set' + prop](value); //FIXME: capitalization
-};
-
-function getProperty(date, prop)
-{
-  return date['get' + prop](); //FIXME: capitalization
-};
-
-function resetLower(date, property)
-{
-  date = new Date(date);
-  var order = [ ['Seconds'], ['Minutes'], ['Hours'], ['Date', 'Day'], ['Month'], ['FullYear'] ];
-  var resetTo =[ 0,            0,           0,         1,               0,         0 ];
-  for(var i = 0; i < order.length && order[i].indexOf(property) == -1; i++)
-  {
-    var propToReset = order[i][0];
-    //console.log("Reset", propToReset, "to", resetTo[i], "in", date);
-    setProperty(date, resetTo[i], propToReset);
-  }
-  //console.log("Result", date);
-  return date;
-};
+import { dateManipulation } from '../util';
+var { getProperty, setProperty, resetLower } = dateManipulation;
 
 export default class TimeRuler extends React.Component {
   propTypes: {

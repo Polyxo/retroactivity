@@ -24,25 +24,25 @@ var model =
     "1":
     {
       programName: "Firefox",
-      logo: "img/firefox.png",
+      icon: "img/firefox.png",
       color: '#ea7e1c'
     },
     "2":
     {
       programName: "Google Chrome",
-      logo: "img/chrome.png",
+      icon: "img/chrome.png",
       color: '#38a0ce'
     },
     "3":
     {
       programName: "gedit",
-      logo: "img/gedit.png",
+      icon: "img/gedit.png",
       color: '#97cf1a'
     },
     "4":
     {
       programName: "Adobe After Effects",
-      logo: "img/ae.png",
+      icon: "img/ae.png",
       color: '#6f1f9c'
     },
   },

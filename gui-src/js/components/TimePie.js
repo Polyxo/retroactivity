@@ -1,23 +1,10 @@
 import React from "react";
 import { Wedge } from "./PieChart";
+import { dateManipulation, arrayToURL } from '../util';
 
 const turns2radians = 2 * Math.PI;
 
-function formatDuration(duration)
-{
-  if(duration == 0)
-    return '';
-  
-  var unitNames = [ 'ms', 's', 'm', 'h', 'd' ];
-  var unitDividers = [ 1000, 60,  60,  24 ];
-  
-  for(var i = 0; i < 4 && duration > unitDividers[i]; i++)
-  {
-    duration /= unitDividers[i];
-  }
-  
-  return Math.round(duration) + ' ' + unitNames[i];
-}
+
 
 export default class TimePie extends React.Component {
   render() {
@@ -153,7 +140,7 @@ export default class TimePie extends React.Component {
       return ( 
         <image
           key={item.application.programName}
-          xlinkHref={item.application.logo}
+          xlinkHref={arrayToURL(item.application.icon)}
           x={Math.cos(item.midAngle * turns2radians) * 40 - 10}
           y={Math.sin(item.midAngle * turns2radians) * 40 - 10}
           height={20}
@@ -207,7 +194,7 @@ export default class TimePie extends React.Component {
           }}
         >
           <tspan { ...props}>{ item.application.programName }</tspan>
-          <tspan { ...props} dy="12">{ formatDuration(item.duration) }</tspan>
+          <tspan { ...props} dy="12">{ dateManipulation.formatDuration(item.duration) }</tspan>
         </text>
       );
     });

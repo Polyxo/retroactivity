@@ -2,6 +2,7 @@ import React from "react";
 import TimeRuler from './TimeRuler';
 import { updateModel } from '../model';
 import model from '../model';
+import { arrayToURL } from '../util';
 
 export default class TimeBar extends React.Component {
   render() {
@@ -73,7 +74,7 @@ export default class TimeBar extends React.Component {
         item.width > 50 ?
           <image
           key={item.application.programName + '_' + i}
-          xlinkHref={item.application.logo}
+          xlinkHref={arrayToURL(item.application.icon)}
           x={item.x + 0.5*item.width - 15}
           y={50 + 80/2 - 15}
           height={30}

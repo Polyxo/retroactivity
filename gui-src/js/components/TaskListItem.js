@@ -1,20 +1,5 @@
 import React from "react";
-
-function formatDuration(duration)
-{
-  if(duration == 0)
-    return '';
-  
-  var unitNames = [ 'ms', 's', 'm', 'h', 'd' ];
-  var unitDividers = [ 1000, 60,  60,  24 ];
-  
-  for(var i = 0; i < 4 && duration > unitDividers[i]; i++)
-  {
-    duration /= unitDividers[i];
-  }
-  
-  return Math.round(duration) + ' ' + unitNames[i];
-}
+import { dateManipulation } from '../util';
 
 export default class TaskListItem extends React.Component
 {
@@ -39,7 +24,7 @@ export default class TaskListItem extends React.Component
     return (
        <div className={'task-list-item' + (duration > 0 ? ' pattern_' + this.props.task.selection + '_fill' : '')}>
          <span className="task-name">{ this.props.task.name }</span>
-         <span className="task-duration">{ formatDuration(duration) }</span>
+         <span className="task-duration">{ dateManipulation.formatDuration(duration) }</span>
          <div className="application-blocks">
            {
              Object.keys(taskDurations).map(key =>
