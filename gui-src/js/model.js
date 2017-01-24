@@ -2,11 +2,11 @@ import EventEmitter from 'events';
 import update from 'react-addons-update';
 try
 {
-  var ipcRenderer = require('electron').ipcRenderer;
+  var ipcRenderer = window.require('electron').ipcRenderer;
 }
 catch(e)
 {
-  console.log("We don't seem to run in electron, showing test data only!");
+  console.log("We don't seem to run in electron, showing test data only!", e);
 }
 
 var emitter = new EventEmitter();

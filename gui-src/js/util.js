@@ -1,11 +1,19 @@
+import memoize from 'memoizee/weak';
+
 module.exports = exports =
 {
+  strictArrayToURL: memoize(function arrayToURL(array, mimetype)
+  {
+    var blob = new Blob([array], {type: mimetype});
+    return URL.createObjectURL(blob);
+  }),
+  
   arrayToURL: function arrayToURL(array, mimetype)
   {
     if(typeof array === 'string')
       return array;
-    var blob = new Blob([array], {type: mimetype}); // ein gültiger MIME-Typ
-    return URL.createObjectURL(blob);
+    else
+      return exports.strictArrayToURL(array, mimetype);
   },
   
   dateManipulation:
