@@ -1,4 +1,6 @@
 var EventEmitter = require('events');
+var browserApi = require('./browser-api');
+var geolib = require('geolib');
 
 function Scheduler()
 {
@@ -168,22 +170,53 @@ DateCondition.prototype.stateChanged = function stateChanged()
 };
 Scheduler.DateCondition = DateCondition;
 
+
+function LocationCondition(conditions)
+{
+  EventEmitter.call(this);
+  this.conditions = conditions;
+  this.geolocation = new browserApi.GeoLocation();
+  this.currentLocation = null;
+  this.state = false;
+  
+  this.onLocationChange = this.onLocationChange.bind(this);
+  this.geolocation.watchPosition(this.onLocationChange);
+}
+LocationCondition.prototype = new Scheduler.Condition();
+
+LocationCondition.prototype.onLocationChange = function onLocationChange(event)
+{
+  var distance = geolib.getDistance(event.coords, this.conditions, this.conditions.distance / 100);
+  var newState = distance < this.conditions.distance;
+
+  if(newState != this.state)
+  {
+    this.state = newState;
+    this.emit('state-changed', this);
+  }
+};
+
 module.exports = exports = Scheduler;
 
 /*TESTS*/
 /*
-var dateCondition = new DateCondition('Seconds', [1, 10, 12, 24, 25, 39, 50, 51, 52]);
-var dateCondition2 = new DateCondition('Minutes', [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58]);
-var condition = new OperatorCondition('or', dateCondition, dateCondition2);
-console.log("State:", condition.state);
-condition.on('state-changed', function()
+var app = require('electron').app;
+
+app.on('ready', function()
 {
-  console.log("State changed:", condition.state);
+  var dateCondition = new DateCondition('Seconds', [1, 10, 12, 24, 25, 39, 50, 51, 52]);
+  var dateCondition2 = new DateCondition('Minutes', [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58]);
+  var locationCondition = new LocationCondition({ latitude: 51.4921714, longitude: 11.9571541, distance: 500 });
+  var condition = new OperatorCondition('or', dateCondition, dateCondition2, locationCondition);
+  console.log("State:", condition.state);
+  condition.on('state-changed', function()
+  {
+    console.log("State changed:", condition.state);
+  });
 });
 */
 //electron testing
 /*
-var app = require('app');
 var browserApi = require('./browser-api');
 
 app.on('ready', function()
@@ -192,5 +225,5 @@ app.on('ready', function()
   onlineStatus.on('online-status-changed', function(event) { console.log(event); });
   
   var geolocation = new browserApi.GeoLocation();
-  geolocation.getCurrentPosition( function(position) { console.log(position); });
+  geolocation.getCurrentPosition( function(position) { console.log(position); }, function(error) { console.log("error", error); });
 });*/

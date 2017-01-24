@@ -24,7 +24,7 @@ app.on('ready', function()
     this.idCounter = 0;
     this.idMapping = [];
     this.successMapping = [];
-    this.erroMapping = [];
+    this.errorMapping = [];
   };
   
   exports.GeoLocation.prototype = new EventEmitter();
