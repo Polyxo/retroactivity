@@ -15,7 +15,7 @@ function resetLower(date, property)
   date = new Date(date);
   var order = [ ['Seconds'], ['Minutes'], ['Hours'], ['Date', 'Day'], ['Month'], ['FullYear'] ];
   var resetTo =[ 0,            0,           0,         1,               0,         0 ];
-  for(var i = 0; order[i].indexOf(property) == -1 && i < order.length; i++)
+  for(var i = 0; i < order.length && order[i].indexOf(property) == -1; i++)
   {
     var propToReset = order[i][0];
     //console.log("Reset", propToReset, "to", resetTo[i], "in", date);
@@ -67,6 +67,12 @@ export default class TimeRuler extends React.Component {
       var align = 'Minutes';
       var interval = 15;
       var divisions = 3;
+    }
+    else
+    {
+      var align = 'Minutes';
+      var interval = 5;
+      var divisions = 5;
     }
     
     var format = function format(date) //FIXME: should be something smarter that depends on current date and duration

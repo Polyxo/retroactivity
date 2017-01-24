@@ -34,9 +34,9 @@ export default class App extends React.Component {
   {
     this.setState(
     {
-      sliceSelection: model.timeSlices.map((slice, i) =>
+      sliceSelection: this.props.data.timeSlices.map((slice, i) =>
       {
-        if(item.key == slice.application)
+        if('' + item.key == '' + slice.application)
           return i;
       }).filter((index) => typeof index != 'undefined'),
       applicationSelection: [item.key]
