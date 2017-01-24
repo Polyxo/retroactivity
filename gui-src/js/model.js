@@ -1,6 +1,13 @@
 import EventEmitter from 'events';
 import update from 'react-addons-update';
-import { ipcRenderer } from 'electron';
+try
+{
+  var ipcRenderer = require('electron').ipcRenderer;
+}
+catch(e)
+{
+  console.log("We don't seem to run in electron, showing test data only!");
+}
 
 var emitter = new EventEmitter();
 
@@ -73,12 +80,19 @@ function onUpdateModel(listener)
   emitter.on('update', listener);
 }
 
-ipcRenderer.on('update-model', function(event, arg)
+try
 {
-  updateModel(arg);
-});
+  ipcRenderer.on('update-model', function(event, arg)
+  {
+    updateModel(arg);
+  });
 
-ipcRenderer.send('can-update-model', {});
+  ipcRenderer.send('can-update-model', {});
+}
+catch(e)
+{
+  console.log("Cannot establish connection to electron main thread");
+}
 
 export default model;
 export { updateModel, onUpdateModel };
