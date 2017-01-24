@@ -4,15 +4,30 @@ import { updateModel } from '../model';
 import model from '../model';
 import { arrayToURL } from '../util';
 
+function sortByBegin(a,b)
+{
+  return a.begin - b.begin;
+}
+
+function sortBySelection(a,b)
+{
+  if(a.selected && !b.selected)
+    return -1;
+  else if(b.selected && !a.selected)
+    return 1;
+  else
+    return sortByBegin(a,b);
+}
+
 export default class TimeBar extends React.Component {
   render() {
-    var timeSlices = this.props.data.timeSlices;
+    var timeSlices = this.props.data.timeSlices.sort(sortByBegin);
+    var begin = timeSlices[0].begin;
     var summary =
     {
       total: timeSlices[timeSlices.length - 1].end- timeSlices[0].begin
     };
     
-    var sum = 0;
     summary.blocks = timeSlices.map((slice, i) =>
     {
       var duration = slice.end - slice.begin;
@@ -20,19 +35,18 @@ export default class TimeBar extends React.Component {
       {
         key: i,
         duration,
-        x: sum / summary.total * 500,
+        x: (slice.begin-begin) / summary.total * 500,
         width: duration / summary.total * 500,
         selected: this.props.sliceSelection ? this.props.sliceSelection.includes(i) : false,
         ...slice,
         application: this.props.data.applications[slice.application],
         task: this.props.data.tasks[slice.task],
       };
-      sum += duration;
       return res;
     });
     
     var blocks = summary.blocks
-      .sort((a,b) => a.selected ? (b.selected ? 0: 1) : -1)
+      .sort(sortBySelection)
       .map((item) =>
       (
         <rect

@@ -15,6 +15,9 @@ export default class TimeRuler extends React.Component {
     var duration = rightDate - leftDate;
     var width = rightPosition - leftPosition;
     
+    leftDate = new Date(leftDate);
+    rightDate = new Date(rightDate);
+    
     if(duration > 1000*60*60*24*31*2) // longer than 2 months
     {
       var align = 'Month';
