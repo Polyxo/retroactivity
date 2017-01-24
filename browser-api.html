@@ -29,7 +29,7 @@
     return navigator.geolocation[fun](gotPositionCallback,
     function(error)
     {
-      ipcRenderer.send('error-getting-current-position', error);
+      ipcRenderer.send('error-getting-current-position', { code: error.code, message: error.message });
     },
     options);
   };

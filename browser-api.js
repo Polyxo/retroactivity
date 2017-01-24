@@ -1,7 +1,10 @@
-var app = require('app');  // Module to control application life.
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
+var app = require('electron').app;
+var BrowserWindow = require('electron').BrowserWindow;
 var ipc = require('electron').ipcMain;
 var EventEmitter = require('events');
+var process = require('process');
+
+process.env.GOOGLE_API_KEY = 'AIzaSyDWUqBQqohHRt5QtGTSHdW2CtZN9AcAGBA';
 
 var browserWindow;
 
