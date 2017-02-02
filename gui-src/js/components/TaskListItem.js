@@ -8,7 +8,7 @@ export default class TaskListItem extends React.Component
   }
   
   render() {
-    console.log("Looking for", this.props.taskKey);
+    //console.log("Looking for", this.props.taskKey);
     var totalDuration = this.props.data.timeSlices.reduce((duration, slice) => duration + slice.end - slice.begin, 0);
     var slices = this.props.data.timeSlices.filter(slice => ''+slice.task == this.props.taskKey);
     var duration = slices.reduce((duration, slice) => duration + slice.end - slice.begin, 0);
@@ -19,7 +19,7 @@ export default class TaskListItem extends React.Component
         taskDurations[slice.application] = 0;
       taskDurations[slice.application] += slice.end - slice.begin;
     });
-    console.log(taskDurations);
+    //console.log(taskDurations);
     
     return (
        <div className={'task-list-item' + (duration > 0 ? ' pattern_' + this.props.task.selection + '_fill' : '')}>

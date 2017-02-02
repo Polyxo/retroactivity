@@ -5,6 +5,9 @@ import TaskList from "./components/TaskList";
 import SVGDefs from "./components/SVGDefs";
 import { updateModel } from './model';
 import model from './model';
+import RepeatDateEditor from './components/RepeatDateEditor';
+
+import commands from '../../commands/index';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -17,10 +20,15 @@ export default class App extends React.Component {
     this.onTaskSelect = this.onTaskSelect.bind(this);
     this.onApplicationSelect = this.onApplicationSelect.bind(this);
     this.onSliceSelect = this.onSliceSelect.bind(this);
+    this.onSave = this.onSave.bind(this);
+    this.onUndo = this.onUndo.bind(this);
+    this.onRedo = this.onRedo.bind(this);
+    
+    this.stack = new commands.Group([]);
   }
   
   onTaskSelect(event, item)
-  {
+  {/*
     var changes = { timeSlices: {}};
     this.state.sliceSelection.forEach((i) =>
     {
@@ -28,6 +36,11 @@ export default class App extends React.Component {
     });
     console.log(changes);
     updateModel(changes);
+    */
+    var group = new commands.Group(this.state.sliceSelection.map((i) => new commands.Assign(i, item.key)));
+    this.stack.add(group);
+    this.stack.guiDo(this.props.data, updateModel);
+    console.log("Stack:", this.stack);
   }
   
   onApplicationSelect(event, item)
@@ -37,7 +50,7 @@ export default class App extends React.Component {
       sliceSelection: this.props.data.timeSlices.map((slice, i) =>
       {
         if('' + item.key == '' + slice.application)
-          return i;
+          return slice.id;
       }).filter((index) => typeof index != 'undefined'),
       applicationSelection: [item.key]
     });
@@ -47,15 +60,31 @@ export default class App extends React.Component {
   {
     this.setState(
     {
-      sliceSelection: [ item.key ],
+      sliceSelection: [ item.id ],
       applicationSelection: []
     });
+  }
+  
+  onSave(event)
+  {
+  }
+  
+  onUndo(event)
+  {
+    this.stack.guiUndo(this.props.data, updateModel, 1);
+  }
+  
+  onRedo(event)
+  {
+    this.stack.guiDo(this.props.data, updateModel, 1);
   }
   
   render() {
     return (
     <div>
       <SVGDefs />
+      <RepeatDateEditor />
+      <button onClick={ this.onUndo }>Undo</button><button onClick={ this.onRedo }>Redo</button>
       <TimePie
         data={ this.props.data }
         applicationSelection={ this.state.applicationSelection }
@@ -67,6 +96,7 @@ export default class App extends React.Component {
         onSelect={this.onSliceSelect}
       />
       <TaskList data={ this.props.data } onSelect={ this.onTaskSelect } />
+      <button onClick={ this.onSave }>Save</button>
     </div>
     );
   }

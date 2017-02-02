@@ -15,16 +15,16 @@ var model =
 {
   timeSlices:
   [
-    { begin: new Date(2017, 0, 2, 16,  0).getTime(), end: new Date(2017, 0, 2, 16, 10).getTime(), application: 1, task: null },
-    { begin: new Date(2017, 0, 2, 16, 10).getTime(), end: new Date(2017, 0, 2, 16, 15).getTime(), application: 3, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 15).getTime(), end: new Date(2017, 0, 2, 16, 30).getTime(), application: 4, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 30).getTime(), end: new Date(2017, 0, 2, 16, 32).getTime(), application: 1, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 32).getTime(), end: new Date(2017, 0, 2, 16, 38).getTime(), application: 4, task: 2 },
-    { begin: new Date(2017, 0, 2, 16, 38).getTime(), end: new Date(2017, 0, 2, 16, 40).getTime(), application: 3, task: 1 },
-    { begin: new Date(2017, 0, 2, 16, 40).getTime(), end: new Date(2017, 0, 2, 16, 41).getTime(), application: 1, task: null },
-    { begin: new Date(2017, 0, 2, 16, 41).getTime(), end: new Date(2017, 0, 2, 16, 45).getTime(), application: 2, task: 1 },
-    { begin: new Date(2017, 0, 2, 16, 45).getTime(), end: new Date(2017, 0, 2, 16, 48).getTime(), application: 3, task: 1 },
-    { begin: new Date(2017, 0, 2, 16, 48).getTime(), end: new Date(2017, 0, 2, 17,  0).getTime(), application: 4, task: 1 },
+    { id:1, begin:new Date(2017, 0, 2, 16,  0).getTime(), end: new Date(2017, 0, 2, 16, 10).getTime(), application: 1, task: null },
+    { id:2, begin:new Date(2017, 0, 2, 16, 10).getTime(), end: new Date(2017, 0, 2, 16, 15).getTime(), application: 3, task: 2 },
+    { id:3, begin:new Date(2017, 0, 2, 16, 15).getTime(), end: new Date(2017, 0, 2, 16, 30).getTime(), application: 4, task: 2 },
+    { id:4, begin:new Date(2017, 0, 2, 16, 30).getTime(), end: new Date(2017, 0, 2, 16, 32).getTime(), application: 1, task: 2 },
+    { id:5, begin:new Date(2017, 0, 2, 16, 32).getTime(), end: new Date(2017, 0, 2, 16, 38).getTime(), application: 4, task: 2 },
+    { id:6, begin:new Date(2017, 0, 2, 16, 38).getTime(), end: new Date(2017, 0, 2, 16, 40).getTime(), application: 3, task: 1 },
+    { id:7, begin:new Date(2017, 0, 2, 16, 40).getTime(), end: new Date(2017, 0, 2, 16, 41).getTime(), application: 1, task: null },
+    { id:8, begin:new Date(2017, 0, 2, 16, 41).getTime(), end: new Date(2017, 0, 2, 16, 45).getTime(), application: 2, task: 1 },
+    { id:9, begin:new Date(2017, 0, 2, 16, 45).getTime(), end: new Date(2017, 0, 2, 16, 48).getTime(), application: 3, task: 1 },
+    { id:10, begin:new Date(2017, 0, 2, 16, 48).getTime(), end: new Date(2017, 0, 2, 17,  0).getTime(), application: 4, task: 1 },
   ],
   applications:
   {
@@ -77,6 +77,7 @@ function updateModel(spec)
   model = update(model, spec);
   console.log("new model", model);
   emitter.emit('update', model);
+  return model;
 }
 
 function onUpdateModel(listener)

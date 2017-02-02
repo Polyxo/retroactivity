@@ -33,11 +33,10 @@ export default class TimeBar extends React.Component {
       var duration = slice.end - slice.begin;
       var res =
       {
-        key: i,
         duration,
         x: (slice.begin-begin) / summary.total * 500,
         width: duration / summary.total * 500,
-        selected: this.props.sliceSelection ? this.props.sliceSelection.includes(i) : false,
+        selected: this.props.sliceSelection ? this.props.sliceSelection.includes(slice.id) : false,
         ...slice,
         application: this.props.data.applications[slice.application],
         task: this.props.data.tasks[slice.task],
