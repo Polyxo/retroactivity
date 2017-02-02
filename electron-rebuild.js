@@ -1,4 +1,4 @@
-var modules = [ 'activity-monitor>iconv', 'sqlite3', 'activity-monitor>ref', 'activity-monitor>ffi' ];
+var modules = [ 'activity-monitor-x11>iconv', 'sqlite3', 'activity-monitor-x11>ref', 'activity-monitor-x11>ffi' ];
 
 var path = require('path');
 var getVersion = require('electron-version');
@@ -13,10 +13,18 @@ getVersion(function(err, version)
   {
     var modules = moduleName.split('>');
     var modulePath = __dirname;
-    modules.forEach(function(part)
+    try
     {
-      modulePath = path.dirname(requireRelative.resolve(part + '/package.json', modulePath));
-    });
+      modules.forEach(function(part)
+      {
+        modulePath = path.dirname(requireRelative.resolve(part + '/package.json', modulePath));
+      });
+    }
+    catch(e)
+    {
+      console.log("Cannot resolve module path", moduleName, ". It will be skipped!");
+      return;
+    }
     try
     {
       var nodePreGypPath = path.dirname(requireRelative.resolve('node-pre-gyp/package.json', modulePath));
