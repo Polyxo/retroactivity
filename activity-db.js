@@ -88,6 +88,19 @@ Database.prototype =
             'FOREIGN KEY(application) REFERENCES applications(id), ' +
             'FOREIGN KEY(task) REFERENCES tasks(id)' +
           ');'
+        ),
+        db.run
+        (
+          'CREATE TABLE IF NOT EXISTS scheduler ' +
+          '( ' +
+            'id INTEGER PRIMARY KEY, ' +
+            'type TEXT, ' +
+            'parent INTEGER, ' +
+            'category TEXT, ' +
+            'data TEXT, ' +
+            'root INTEGER, ' +
+            'FOREIGN KEY(parent) REFERENCES scheduler(id) ' +
+          ');'
         )
       ]);
     }).then(function(results)

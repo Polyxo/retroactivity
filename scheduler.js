@@ -1,6 +1,7 @@
 var EventEmitter = require('events');
 var browserApi = require('./browser-api');
 var geolib = require('geolib');
+var db = require('./activity-db');
 
 function Scheduler()
 {
@@ -8,6 +9,57 @@ function Scheduler()
 
 Scheduler.prototype =
 {
+  loadFromDbList: function loadFromDbList(conditions)
+  {
+    var root = conditions.shift();
+    
+    var conditionsByParent = {};
+    conditions.forEach(function(condition)
+    {
+      if(!conditionsByParent[condition.parent])
+        conditionsByParent[condition.parent] = [];
+      conditionsByParent[condition.parent].push(condition);
+    });
+    
+    function createFromDB(condition)
+    {
+      var args = [null];
+      if(condition.data)
+        args = args.concat(JSON.parse(condition.data));
+      
+      if(condition.type == 'OperatorCondition')
+      {
+        var children = conditionsByParent[condition.id].map(createFromDB);
+        args = args.concat(children);
+      }
+      
+      //console.log("Condition type", condition.type, "and args", args);
+      var Constructor = Scheduler[condition.type];
+      Constructor = Constructor.bind.apply(Constructor, args);
+      var result = new Constructor();
+      
+      result.dbId = condition.id;
+      
+      return result;
+    }
+    
+    var result = createFromDB(root);
+    //console.log("loaded", result, "as", category);
+    return result;
+  },
+  
+  load: function load(category)
+  {
+    return db.initializedPromise.then(function(db)
+    {
+      return db.all('SELECT * FROM scheduler WHERE category = $category ORDER BY root DESC', { $category: category });
+    }).then(function(conditions)
+    {
+      if(!conditions[0].root)
+        throw "Cannot find root in scheduler category " + category;
+      return conditions;
+    }).then(this.loadFromDbList.bind(this));
+  }
 };
 
 Scheduler.Condition = function Condition() { };
@@ -24,7 +76,7 @@ VariableCondition.prototype = new Scheduler.Condition();
 
 Object.defineProperty(VariableCondition.prototype, 'state',
 {
-  get: function gtState()
+  get: function getState()
   {
     return this._state;
   },
@@ -195,6 +247,8 @@ LocationCondition.prototype.onLocationChange = function onLocationChange(event)
     this.emit('state-changed', this);
   }
 };
+
+Scheduler.LocationCondition = LocationCondition;
 
 module.exports = exports = Scheduler;
 
