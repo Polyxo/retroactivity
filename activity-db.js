@@ -4,7 +4,8 @@ var Promise = require('promise');
 
 function Database()
 {
-  this.dbPromise = sqlite.open(path.join(__dirname, 'storage', 'database'));
+  this.dbPromise = Promise.resolve(sqlite.open(path.join(__dirname, 'storage', 'database')));
+  this.dbPromise.done(function() {});
 }
 
 function sqliteAffinity(value)
@@ -27,30 +28,13 @@ function objToSqliteSpec(obj)
   return Object.keys(obj).map(function(name) { return name + ' ' + sqliteAffinity(obj[name]); }).join(', ');
 };
 
-var exampleKey = 
-{
-  windowID: 123,
-  pid: 123,
-  desktopFile: '/some/path',
-  'class': 'some_string',
-  gtkWinID: 'some_string',
-  windowRole: 'some_string',
-  windowTitle: 'some_string'
-};
-
-var exampleData =
-{
-  'programName': 'some_string',
-  'localisedProgramName': 'some_string',
-  'icon': new Buffer(['1', '2', '3']),
-  'color': '#123456'
-};
-
 Database.prototype =
 {
-  initialize: function initialize()
+  initialize: function initialize(ActivityMonitor)
   {
-    
+    this.exampleKey = ActivityMonitor.Window.exampleKey;
+    this.exampleData = ActivityMonitor.Window.exampleData;
+    this.keyScores = ActivityMonitor.Window.keyScores;
     
     this.initializedPromise = this.dbPromise.then(function(db)
     {
@@ -62,8 +46,8 @@ Database.prototype =
           'CREATE TABLE IF NOT EXISTS applications ' +
           '(' +
              'id INTEGER PRIMARY KEY, ' +
-             objToSqliteSpec(exampleKey) + ', ' +
-             objToSqliteSpec(exampleData) +
+             objToSqliteSpec(this.exampleKey) + ', ' +
+             objToSqliteSpec(this.exampleData) +
           ');'
         ),
         db.run
@@ -103,7 +87,7 @@ Database.prototype =
           ');'
         )
       ]);
-    }).then(function(results)
+    }.bind(this)).then(function(results)
     {
       console.log("DB initialized");
       return this.dbPromise;
@@ -112,13 +96,15 @@ Database.prototype =
       console.log("DB error", err);
       throw err;
     });
+
+    this.initializedPromise.done(function() {});
     
     return this.initializedPromise;
   },
   
   insertApplication: function insertApplication(key, data)
   {
-    var fields = Object.keys(exampleKey).concat(Object.keys(exampleData));
+    var fields = Object.keys(this.exampleKey).concat(Object.keys(this.exampleData));
     var values = fields.map(function(name) { if(typeof key[name] !== 'undefined') return key[name]; else return data[name]; });
     return this.initializedPromise.then(function(db)
     {
@@ -138,7 +124,7 @@ Database.prototype =
   
   updateApplication: function updateApplication(id, key, data)
   {
-    var fields = Object.keys(exampleKey).concat(Object.keys(exampleData));
+    var fields = Object.keys(this.exampleKey).concat(Object.keys(this.exampleData));
     var values =  {};
     fields.forEach(function(propName)
     {
@@ -169,20 +155,12 @@ Database.prototype =
   
   matchApplication: function matchApplication(key)
   {
-    var scores =
-    {
-      windowID: 12,
-      pid: 10,
-      'class': 2,
-      desktopFile: 8,
-      gtkWinID: 4,
-      windowRole: 1,
-      windowTitle: 3
-    };
+    var scores = this.keyScores;
     
     var minScore = 6;
+    var statement;
     
-    return this.initializedPromise.then(function(db)
+    var promise = this.initializedPromise.then(function(db)
     {
       var newKey =  {};
       Object.keys(key).forEach(function(propName)
@@ -201,7 +179,7 @@ Database.prototype =
         scoreClauses.push('(CASE WHEN ' + propName + ' = $' + propName + ' THEN ' + (scores[propName] || 1) + ' ELSE 0 END)');
       });
       
-      var statement = 'SELECT *, ';
+      statement = 'SELECT *, ';
       statement += scoreClauses.join(' + ') + ' AS score';
       statement += ' FROM applications WHERE ';
       statement += '(' + whereClauses.join(' OR ') + ') AND score >= ' + minScore;
@@ -209,6 +187,9 @@ Database.prototype =
       
       return db.get(statement, newKey);
     });
+
+    promise.done(function() {}, function(err) { throw new Error(statement) });
+    return promise;
   },
   
   

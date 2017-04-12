@@ -27,7 +27,7 @@ function App()
   this.tray = require('./tray');
   
   this.database = database;
-  this.database.initialize();
+  this.database.initialize(ActivityMonitor);
   
   this.activityMonitor = new ActivityMonitor();
   
@@ -103,14 +103,6 @@ App.prototype =
   
   openAppWindow: function openAppWindow()
   {
-    this.database.matchApplication({ windowID: 123 }).then(function(app)
-    {
-      console.log("match", app);
-    }, function(err)
-    {
-      console.log("match err", err);
-    });
-    
     if(!this.window)
     {
       this.window = new BrowserWindow({ webPreferences: { }, height: 600, width: 1200});
