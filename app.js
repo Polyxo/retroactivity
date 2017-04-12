@@ -66,6 +66,31 @@ function App()
   electronApp.on('window-all-closed', function() {
     //Keep running :)
   });
+  
+  ipc.on('can-update-model', function(event)
+  {
+    console.log("Can update model");
+    var update = {};
+    this.database.getSlices((new Date()).getTime() - 1000*60*60, new Date())
+      .then(function(timeSlices)
+      {
+        update.timeSlices = { $set: timeSlices };
+        
+        var appIds = {};
+        timeSlices.forEach(function(slice) { appIds[slice.application] = true; });
+        appIds = Object.keys(appIds).map(function(id) { return parseInt(id); });
+        console.log("app id", appIds);
+        return this.database.getApplications(appIds);
+      }.bind(this))
+      .then(function(applications)
+      {
+        console.log("Applications", applications);
+        update.applications = { $set: applications };
+        
+        event.sender.send('update-model', update);
+      }.bind(this));
+    
+  }.bind(this));
 }
 
 App.prototype =
