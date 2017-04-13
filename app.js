@@ -3,21 +3,7 @@ var actions = require('./actions/index');
 var BrowserWindow = require('electron').BrowserWindow;
 var electronApp = require('electron').app;
 var database = require('./activity-db');
-try
-{
-  if(process.platform == 'linux')
-    var ActivityMonitor = require('activity-monitor-x11');
-  else if(process.platform == 'darwin')
-    var ActivityMonitor = require('activity-monitor-mac');
-  else if(process.platform == 'win32')
-    var ActivityMonitor = require('activity-monitor-win');
-  else
-    throw new Error("Cannot find activity-monitor package for current platform");
-}
-catch(e)
-{
-  //TODO: show error window
-}
+var ActivityMonitor = require('activity-monitor');
 
 var ipc = require('electron').ipcMain;
 var Promise = require('promise');

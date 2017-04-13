@@ -4,6 +4,7 @@
   "description": "An intelligent time tracking application based on user activity",
   "author": "Lukas Winter <lukas@polyxo.de> (http://geloescht.net/)",
   "dependencies": {
+    "activity-monitor": "^0.1.0",
     "classnames": "^2.2.5",
     "events": "^1.1.1",
     "geolib": "^2.0.22",
@@ -14,11 +15,6 @@
     "react-addons-update": "^15.4.1",
     "react-dom": "^15.4.1",
     "sqlite": "^2.2.4"
-  },
-  "optionalDependencies": {
-    "activity-monitor-x11": ">0.0.0",
-    "activity-monitor-mac": ">0.0.0",
-    "activity-monitor-win": ">0.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
